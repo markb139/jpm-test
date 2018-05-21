@@ -2,7 +2,7 @@ import unittest
 from datetime import datetime, timedelta
 
 from gbce.datastore import Trade, BUY, SELL
-from gbce.model import GBCEModel, default_model
+from gbce.model import GBCEModel, default_model, NoSuchStockException
 from gbce.stocks import CommonStock, PreferredStock
 
 
@@ -22,11 +22,19 @@ class TestModel(unittest.TestCase):
         dividend_yield = self.model.dividend_yield(symbol="preferred", price=1.0)
         self.assertEqual(dividend_yield, 10.0)
 
+    def test_calc_yield_fails_for_non_existant_stock(self):
+        with self.assertRaises(NoSuchStockException):
+            self.model.dividend_yield(symbol="fake stock", price=1.0)
+
     def test_calc_pe_ratio(self):
         pe_ratio = self.model.pe_ratio(symbol="common", price=10.0)
         self.assertEqual(pe_ratio, 1.0)
         pe_ratio = self.model.pe_ratio(symbol="preferred", price=10.0)
         self.assertEqual(pe_ratio, 10.0)
+
+    def test_calc_pe_ratio_fails_for_non_existant_stock(self):
+        with self.assertRaises(NoSuchStockException):
+            self.model.pe_ratio(symbol="fake stock", price=1.0)
 
     def test_record_buy_trade(self):
         new_entry = Trade(symbol="common", quantity=100, price=100.0, trade_type=BUY, timestamp=datetime.utcnow())
@@ -37,6 +45,11 @@ class TestModel(unittest.TestCase):
         new_entry = Trade(symbol="common", quantity=100, price=100.0, trade_type=SELL, timestamp=datetime.utcnow())
         self.model.record(new_entry)
         self.assertEqual(self.model.count, 1)
+
+    def test_record_fails_for_non_exisant_stock(self):
+        with self.assertRaises(NoSuchStockException):
+            entry = Trade(symbol="fake stock", quantity=100, price=100.0, trade_type=SELL, timestamp=datetime.utcnow())
+            self.model.record(entry)
 
     def test_volume_weighted_price(self):
         now = datetime.utcnow()
@@ -51,6 +64,10 @@ class TestModel(unittest.TestCase):
 
         volume_weighted_price = self.model.volume_weighted_price(symbol="common")
         self.assertEqual(volume_weighted_price, 100.0)
+
+    def test_volume_weighted_price_fails_for_non_existant_stck(self):
+        with self.assertRaises(NoSuchStockException):
+            self.model.volume_weighted_price(symbol="fake stock")
 
     def test_all_share_index(self):
         now = datetime.utcnow()

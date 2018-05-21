@@ -2,6 +2,7 @@ from .formulas import calc_common_dividend_yield, calc_preferred_dividend_yield,
 
 
 class CommonStock(object):
+    """Common stock class"""
     last_dividend = 0.0
     par_value = 0.0
 
@@ -17,6 +18,7 @@ class CommonStock(object):
 
 
 class PreferredStock(CommonStock):
+    """Preferred stock class"""
     fixed_dividend = 0.0
 
     def __init__(self, fixed_dividend=0.0, **kwargs):

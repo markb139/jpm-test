@@ -6,6 +6,10 @@ from .formulas import calc_volume_weighted_stock_price, calc_geometric_mean
 from .stocks import CommonStock, PreferredStock
 
 
+class NoSuchStockException(Exception):
+    pass
+
+
 class GBCEModel(object):
     """GBCE model"""
     def __init__(self, stock_entries):
@@ -22,6 +26,8 @@ class GBCEModel(object):
         :param float price: current price of stock
         :return: calculated yield
         """
+        if symbol not in self.entries:
+            raise NoSuchStockException()
         return self.entries[symbol].dividend_yield(price=price)
 
     def pe_ratio(self, symbol, price):
@@ -30,6 +36,8 @@ class GBCEModel(object):
         :param float price: current price of stock
         :return: calculated P/E ratio
         """
+        if symbol not in self.entries:
+            raise NoSuchStockException()
         return self.entries[symbol].pe_ratio(price=price)
 
     def volume_weighted_price(self, symbol):
@@ -37,6 +45,8 @@ class GBCEModel(object):
         :param str symbol: stock symbol
         :return: calculated price
         """
+        if symbol not in self.entries:
+            raise NoSuchStockException()
         timestamp_filter = datetime.utcnow() - timedelta(minutes=5)
         trades = map(lambda e: (e.price, e.quantity), self.store.find(symbol=symbol, timestamp=timestamp_filter))
         return calc_volume_weighted_stock_price(trades=trades)
@@ -57,6 +67,8 @@ class GBCEModel(object):
         """Record a new trade
         :param trade trade: the trade data to store
         """
+        if trade.symbol not in self.entries:
+            raise NoSuchStockException()
         self.store.append(trade)
 
 
