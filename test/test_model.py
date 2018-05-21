@@ -8,11 +8,11 @@ from gbce.stocks import CommonStock, PreferredStock
 
 class TestModel(unittest.TestCase):
     def setUp(self):
-        stocks = {
+        stock_entries = {
             "common": CommonStock(last_dividend=10, par_value=10),
             "preferred": PreferredStock(last_dividend=1.0, par_value=100, fixed_dividend=0.1)
         }
-        self.model = GBCEModel(stocks=stocks)
+        self.model = GBCEModel(stock_entries=stock_entries)
         self.assertIsNotNone(self.model)
 
     def test_calc_yield(self):

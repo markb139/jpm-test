@@ -2,7 +2,7 @@ from .formulas import calc_common_dividend_yield, calc_preferred_dividend_yield,
 
 
 class CommonStock(object):
-    last_dividend=0.0
+    last_dividend = 0.0
     par_value = 0.0
 
     def __init__(self, last_dividend=0.0, par_value=0.0):
@@ -15,8 +15,10 @@ class CommonStock(object):
     def pe_ratio(self, price):
         return calc_pe_ratio(dividend=self.last_dividend, price=price)
 
+
 class PreferredStock(CommonStock):
     fixed_dividend = 0.0
+
     def __init__(self, fixed_dividend=0.0, **kwargs):
         super(PreferredStock, self).__init__(**kwargs)
         self.fixed_dividend = fixed_dividend
